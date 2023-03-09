@@ -1,0 +1,163 @@
+-- Database: apiario
+
+-- DROP DATABASE IF EXISTS apiario;
+
+CREATE DATABASE apiario
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Italian_Italy.1252'
+    LC_CTYPE = 'Italian_Italy.1252'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+	
+	
+	-- Table: public.apiario
+
+-- DROP TABLE IF EXISTS public.apiario;
+
+CREATE TABLE IF NOT EXISTS public.apiario
+(
+    id_apiario integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    indirizzo text COLLATE pg_catalog."default" NOT NULL,
+    longitudine numeric(11,8) NOT NULL,
+    latitudine numeric(10,8) NOT NULL,
+    CONSTRAINT apiario_pkey PRIMARY KEY (id_apiario)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.apiario
+    OWNER to postgres;
+	
+	
+	
+	-- Table: public.tipo_arnia
+
+-- DROP TABLE IF EXISTS public.tipo_arnia;
+
+CREATE TABLE IF NOT EXISTS public.tipo_arnia
+(
+    id_tipo_arnia integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    descrizione text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT tipo_arnia_pkey PRIMARY KEY (id_tipo_arnia)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.tipo_arnia
+    OWNER to postgres;
+	
+	
+	-- Table: public.tipo_miele
+
+-- DROP TABLE IF EXISTS public.tipo_miele;
+
+CREATE TABLE IF NOT EXISTS public.tipo_miele
+(
+    id_tipo_miele integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    descrizione text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT tipo_miele_pkey PRIMARY KEY (id_tipo_miele)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.tipo_miele
+    OWNER to postgres;
+	
+	
+	
+	-- Table: public.arnia
+
+-- DROP TABLE IF EXISTS public.arnia;
+
+CREATE TABLE IF NOT EXISTS public.arnia
+(
+    id_arnia integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    tipo_regina text COLLATE pg_catalog."default" NOT NULL,
+    anno_regina integer NOT NULL,
+    anno_acquisto integer NOT NULL,
+    id_apiario integer NOT NULL,
+    id_tipo_arnia integer NOT NULL,
+    CONSTRAINT arnia_pkey PRIMARY KEY (id_arnia),
+    CONSTRAINT id_apiario FOREIGN KEY (id_apiario)
+        REFERENCES public.apiario (id_apiario) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT id_tipo_arnia FOREIGN KEY (id_tipo_arnia)
+        REFERENCES public.tipo_arnia (id_tipo_arnia) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.arnia
+    OWNER to postgres;
+	
+	
+	-- Table: public.produzione_miele
+
+-- DROP TABLE IF EXISTS public.produzione_miele;
+
+CREATE TABLE IF NOT EXISTS public.produzione_miele
+(
+    id_produzione integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    data_produzione date NOT NULL,
+    id_arnia integer NOT NULL,
+    id_tipo_miele integer NOT NULL,
+    quantita integer NOT NULL,
+    CONSTRAINT produzione_miele_pkey PRIMARY KEY (id_produzione),
+    CONSTRAINT id_arnia FOREIGN KEY (id_arnia)
+        REFERENCES public.arnia (id_arnia) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT id_tipo_miele FOREIGN KEY (id_tipo_miele)
+        REFERENCES public.tipo_miele (id_tipo_miele) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.produzione_miele
+    OWNER to postgres;
+	
+	
+	
+	-- Table: public.trattamenti
+
+-- DROP TABLE IF EXISTS public.trattamenti;
+
+CREATE TABLE IF NOT EXISTS public.trattamenti
+(
+    id_trattamento integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    id_arnia integer NOT NULL,
+    descrizione text COLLATE pg_catalog."default" NOT NULL,
+    data_trattamento date NOT NULL,
+    CONSTRAINT trattamenti_pkey PRIMARY KEY (id_trattamento),
+    CONSTRAINT id_arnia FOREIGN KEY (id_arnia)
+        REFERENCES public.arnia (id_arnia) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.trattamenti
+    OWNER to postgres;
+    
+    
+    
+    
+    
+    
+SELECT b.id_arnia, a.id_produzione, c.descrizione, a.data_produzione, d.id_tipo_miele, a.quantita, b.id_apiario, e.indirizzo 
+FROM produzione_miele a, arnia b ,tipo_arnia c, tipo_miele d, apiario e 
+WHERE a.id_arnia = b.id_arnia 
+AND b.id_tipo_arnia= c.id_tipo_arnia
+AND a.id_tipo_miele = d.id_tipo_miele 
+AND b.id_apiario = e.id_apiario
+AND a.data_produzione BETWEEN TO_DATE('2000/01/01', 'yyyy/mm/dd') AND TO_DATE('2022/12/31', 'yyyy/mm/dd')
+AND d.id_tipo_miele in (2,3,1,4)
+AND b.id_apiario in (2,3,77,76) ORDER BY a.data_produzione,b.id_apiario

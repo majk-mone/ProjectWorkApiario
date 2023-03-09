@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "9e7412a7-48e5-44e0-8766-ea749fdb5bfb",
+		"name": "Apiario",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Inserisci Apiario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"indirizzo\":\"Via roma 27\",\r\n    \"longitudine\":-14.999,\r\n    \"latitudine\": 35.777\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/apiario",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"apiario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lista Apiari",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/apiario",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"apiario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modifica Apiario",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n        \"longitudine\": -99.999,\r\n        \"latitudine\": 77.777,\r\n        \"indirizzo\": \"Via apiario di prova\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/apiario/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"apiario",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Elimina Apiario",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/apiario/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"apiario",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Inserisci Arnia",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tipoRegina\":\"Ligustica\",\r\n    \"annoRegina\":2019,\r\n    \"annoAcquisto\": 2020,\r\n    \"idApiario\": 2,\r\n    \"idTipoArnia\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/arnia",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"arnia"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lista Arnie",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/arnia",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"arnia"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modifica Arnia",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tipoRegina\":\"Buckfast\",\r\n    \"annoRegina\":2010,\r\n    \"annoAcquisto\": 2011,\r\n    \"idApiario\": 3,\r\n    \"idTipoArnia\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/arnia/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"arnia",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Elimina Arnia ",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/arnia/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"arnia",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Inserisci Trattamento",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idArnia\":3,\r\n    \"descrizione\":\"Trattamento da Cancellare\",\r\n    \"dataTrattamento\":\"2022-02-22\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/trattamento",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"trattamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lista Trattamenti",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idArnia\":3,\r\n    \"descrizione\":\"Trattamento da Cancellare\",\r\n    \"dataTrattamento\":\"2022-02-22\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/trattamento",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"trattamento"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Elmina Trattamenti",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/trattamento/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"trattamento",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Inserisci Produzione Miele",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dataProduzione\":\"2021-12-28\",\r\n    \"idArnia\":2,\r\n    \"idTipoMiele\": 2,\r\n    \"quantita\": 25\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/miele",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"miele"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modifica Produzione Miele",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dataProduzione\":\"2021-09-28\",\r\n    \"idArnia\":2,\r\n    \"idTipoMiele\": 2,\r\n    \"quantita\": 25\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/miele/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"miele",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Elimina Produzione Miele",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/miele/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"miele",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lista Produzione Miele",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/miele",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"miele"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

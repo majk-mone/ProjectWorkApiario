@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='bg-dark'>
+<head>
+<title>Arnie</title>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="jquery-3.6.0.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="messages_it.js"></script>
+
+<script>
+var listaApiari= new Array();
+var listaDescrizioni= new Array();
+
+$(document).ready(function(){
+	getListaApiari();
+	getListaDescrizioni();
+	lista();
+});
+
+
+function getListaApiari(){
+	 $.get("http://localhost:8082/apiario",
+	 function(data, status){
+	 var cnt = data.length;
+	 
+	 console.log('COUNT = ' + cnt);
+		
+     for(let i=0; i<cnt; i++) {
+    	listaApiari.push(data[i]);	 
+     }    
+ });
+}
+
+function getListaDescrizioni(){
+	 $.get("http://localhost:8082/tipoarnia",
+	 function(data, status){
+	 var cnt = data.length;
+	 
+	 console.log('COUNT = ' + cnt);
+		
+     for(let i=0; i<cnt; i++) {
+    	listaDescrizioni.push(data[i]);	 
+     }    
+ });
+}
+
+
+
+	function lista() {
+		$("body").empty();
+		$.get( "http://localhost:8082/arnia",
+						
+						function(data, status) {
+							var cnt = data.length;
+							var tr = "";
+							$("#tbody").empty();
+							
+
+							var table = "<div class='row bg-dark'>"
+									+ "<div class='col-2'text-center'><br /><a href='/menu'><button class='btn btn-secondary btn-sm'><i class='fa fa-arrow-left'></i> menù</button></a></div>"
+									+ "<div class='col-2'></div>"
+									+ "<div class='col-4 text-center h2 text-warning'>"
+									+ "<br />Lista Arnie"
+									+ "</div>"
+									+ "<div class='col-2'></div>"
+									+ "<div class='col-2 text-center'><br /><button class='btn btn-success btn-sm' onclick='inserimento()'><i class='fa fa-plus'></i> inserimento</button></div>"
+									+ "</div> <div>"
+									+ "<table class='table table-responsive'>"
+									+ "<thead class='bg-warning'>" 
+									+ "<tr>"
+									+ "<th>idArnia</th>"
+									+ "<th>tipoRegina</th>"
+									+ "<th>annoRegina</th>"
+									+ "<th>annoAcq</th>" 
+									+ "<th>idApiario</th>"
+									+ "<th>iDTipoArnia</th>" 
+									+ "<th><div class='col-2'text-center'><a href='http://localhost:8082/download/Arnia.xlsx'><button class='btn btn-success btn-sm'> Arnie.xlsx</button></a></div></th>"
+									+ "<th><div class='col-2'text-center'><a href='http://localhost:8082/download/Arnia.pdf'><button class='btn btn-success btn-sm'>Arnie.pdf</button></a></div></th>" 
+									+ "</tr>" 
+									+ "</thead>"
+									+ "<tbody id='tbody'>" 
+									+ "</tbody>"
+									+ "</table>" 
+									+ "</div>";
+
+							 console.log('COUNT = ' + cnt);
+							$("body").append(table);
+							
+							
+							for (let i = 0; i < cnt; i++) {
+								console.log(data[i].idArnia);
+
+								var idArnia = data[i].idArnia;
+								var tipoRegina = data[i].tipoRegina;
+								var annoRegina = data[i].annoRegina;
+								var annoAcq = data[i].annoAcquisto;
+								var idApiario = data[i].apiario.indirizzo;
+								var descrizione =data[i].tipoArnia.descrizione;
+
+								tr = tr
+										+ "<tr><td>"
+										+ idArnia
+										+ "</td><td>"
+										+ tipoRegina
+										+ "</td><td>"
+										+ annoRegina
+										+ "</td><td>"
+										+ annoAcq
+										+ "</td><td>"
+										+ idApiario
+										+ "</td><td>"
+										+ descrizione
+										+ "</td><td><button class='btn btn-primary' onclick='modifica("
+										+ JSON.stringify(data[i])
+										+ ")'><i class='fa fa-edit'></i> modifica</button> </td>"
+										+ "</td><td><button class='btn btn-danger' onclick='elimina("
+										+ JSON.stringify(data[i])
+										+ ")'><i class='fa fa-trash'></i> elimina</button> </td></tr>";
+							}
+							$("#tbody").append(tr);
+						});
+	};
+	
+	function modifica(arnia) {
+		$("body").empty();
+		
+		var optionApiari= "<option value=''>scegli...</option>";
+		 var cnt = listaApiari.length;
+		 for(var i=0; i<cnt; i++){
+			 if(arnia.idApiario  == listaApiari[i].idApiario){
+				 optionApiari = optionApiari + "<option value='"+ listaApiari[i].idApiario +"' selected>"+listaApiari[i].indirizzo+"</option>";			 
+			 }else{
+				 optionApiari = optionApiari + "<option value='"+ listaApiari[i].idApiario +"'>"+listaApiari[i].indirizzo+"</option>";
+			 }
+		 }
+		 
+		 var optionTipiArnia= "<option value=''>scegli...</option>";
+		 var cnt = listaDescrizioni.length;
+		 for(var i=0; i<cnt; i++){
+			 if(arnia.idTipoArnia == listaDescrizioni[i].idTipoArnia){
+			 optionTipiArnia = optionTipiArnia + "<option value='"+ listaDescrizioni[i].idTipoArnia +"' selected>"+listaDescrizioni[i].descrizione+"</option>";
+		 }else{
+			 optionTipiArnia = optionTipiArnia + "<option value='"+ listaDescrizioni[i].idTipoArnia +"'>"+listaDescrizioni[i].descrizione+"</option>";
+		 	}
+	 	}
+		 
+
+		var form = "<div class='text-center'>"
+			+ "<form id='formInserimento'>"
+			+ "<div class='text-center h2'>Modifica Arnia ID: " + arnia.idArnia + "</div>"
+			+ "<div class='row'>"
+			+ "<div class='col-12'>"
+			+ "<form id='formInserimento'>"
+			+ "<table class='table text-center'>"
+			+ "<tr><th>Tipo Regina</th><td>"
+			+ "<input type='text' id='tipoRegina' name='tipoRegina' value='" + arnia.tipoRegina + "' required>" 
+			+ "</td></tr>"
+			+ "<tr><th>Anno Nascita Regina</th><td>"
+			+ "<input type='text' id='annoRegina' name='annoRegina' value='" + arnia.annoRegina + "' required>"
+			+ "</td></tr>"
+			+ "<tr><th>Anno Acquisto Regina</th><td>"
+			+ "<input type='text' id='annoAcquisto' name='annoAcquisto' value='" + arnia.annoAcquisto + "' required>"
+			+ "</td></tr>"
+			+ "<tr><th>Indirizzo apiario</th><td>"
+			+ "<select name='indirizzo' id='indirizzo' onchange='cercaIndirizzo()' required>"
+			+ optionApiari
+			+ "</select>"
+			+ "</td></tr>"
+			+ "<tr><th>Tipo Arnia</th><td>"
+			+ "<select name='descrizione' id='descrizione' required>"
+			+ optionTipiArnia
+			+ "</select>"
+			+ "</td></tr>"
+	        + "</table>"
+			+ "</div>"
+			+ "</div>"
+			+ "<div class='text-center'>"
+			+ "<button class='btn btn-primary'  onclick='submitModificaArnia(" + arnia.idArnia + ")'><i class='fa fa-plus'></i> modifica</button> &nbsp;"
+			+ "<button class='btn btn-secondary' onclick='lista()'><i class='fa fa-close'></i> annulla</button>"
+			+ "</div>"
+			+ "</form>"
+			+ "</div>";
+
+		$("body").append(form);
+		$("#formInserimento").validate();
+		
+	}
+
+	
+	function inserimento() {
+		 $("body").empty();
+
+		 var optionApiari= "<option value=''>scegli...</option>";
+		 var cnt = listaApiari.length;
+		 for(var i=0; i<cnt; i++){
+			optionApiari = optionApiari + "<option value='"+ listaApiari[i].idApiario +"'>"+listaApiari[i].indirizzo +"</option>";
+		 }
+		 
+		 var optionTipiArnia= "<option value=''>scegli...</option>";
+		 var cnt = listaDescrizioni.length;
+		 for(var i=0; i<cnt; i++){
+			 optionTipiArnia = optionTipiArnia + "<option value='"+ listaDescrizioni[i].idTipoArnia +"'>"+listaDescrizioni[i].descrizione+"</option>";
+		 }
+
+		 var form = "<div class='text-center'>"
+				+ "<form id='formInserimento'>"
+				+ "<div class='text-center h2'>Inserisci Arnia </div>"
+				+ "<div class='row'>"
+				+ "<div class='col-12'>"
+				+ "<form id='formInserimento'>"
+				+ "<table class='table text-center'>"
+				+ "<tr><th>Tipo Regina</th><td>"
+				+ "<input type='text' id='tipoRegina' name='tipoRegina' value='' required>" 
+				+ "</td></tr>"
+				+ "<tr><th>Anno Nascita Regina</th><td>"
+				+ "<input type='text' id='annoRegina' name='annoRegina' value='' required>"
+				+ "</td></tr>"
+				+ "<tr><th>Anno Acquisto Regina</th><td>"
+				+ "<input type='text' id='annoAcquisto' name='annoAcquisto' value='' required>"
+				+ "</td></tr>"
+				+ "<tr><th>Indirizzo apiario</th><td>"
+				+ "<select name='indirizzo' id='indirizzo' onchange='cercaIndirizzo()' required>"
+				+ optionApiari
+				+ "</select>"
+				+ "</td></tr>"
+				+ "<tr><th>Tipo Arnia</th><td>"
+				+ "<select name='descrizione' id='descrizione' required>"
+				+ optionTipiArnia
+				+ "</select>"
+				+ "</td></tr>"
+		        + "</table>"
+				+ "</div>"
+				 + "<div class='col-5 text-center h2' id='mappa'> in attesa dei dati... </div>"
+				+ "</div>"
+				+ "<div class='text-center'>"
+				+ "<button class='btn btn-primary' onclick='submitInserimentoArnia()'><i class='fa fa-plus'></i> inserisci</button> &nbsp;"
+				+ "<button class='btn btn-secondary' onclick='lista()'><i class='fa fa-close'></i> annulla</button>"
+				+ "</div>"
+				+ "</form>"
+				+ "</div>";
+
+		$("body").append(form);
+		$("#formInserimento").validate();
+		
+	}
+	
+	
+	function submitModificaArnia(idArnia) {
+		
+
+		var check = $("#formInserimento").valid();
+		if(check) {
+
+		var formData="{"
+		    + "\"tipoRegina\":" + "\"" + $("#tipoRegina").val() + "\","
+		    + "\"annoRegina\":" + "\"" + $("#annoRegina").val() + "\","
+		    + "\"annoAcquisto\":" + "\"" + $("#annoAcquisto").val() + "\","
+		    + "\"apiario\":" + "{"
+	    	+ "\"idApiario\":" + "\"" + $("#indirizzo").val() + "\""
+	    	+ "},"
+		    + "\"tipoArnia\":" + "{"
+	    	+ "\"idTipoArnia\":" + "\"" + $("#descrizione").val() + "\""
+	    	+ "}"
+		 +"}";
+		 
+		 alert(formData);
+				console.log(formData)
+				
+				$.ajax({
+				type: "PUT",
+				url: "http://localhost:8082/arnia/" + idArnia,
+				contentType: "application/json",
+				data: formData, // serializes the form's elements.
+				success: function(data)
+				{
+				  // alert(data); // show response from the php script.
+				  lista();
+				}
+				});
+		}
+	}	
+	
+	function submitInserimentoArnia() {
+		
+		
+       
+		var check = $("#formInserimento").valid();
+		if(check) {
+			
+			
+			var dataSubmit = "{"
+			    + "\"tipoRegina\":" + "\"" + $("#tipoRegina").val() + "\","
+			    + "\"annoRegina\":" + "\"" + $("#annoRegina").val() + "\","
+			    + "\"annoAcquisto\":" + "\"" + $("#annoAcquisto").val() + "\","
+			    + "\"apiario\":" + "{"
+		    	+ "\"idApiario\":" + "\"" + $("#indirizzo").val() + "\""
+		    	+ "},"
+			    + "\"tipoArnia\":" + "{"
+		    	+ "\"idTipoArnia\":" + "\"" + $("#descrizione").val() + "\""
+		    	+ "}"
+			 +"}";
+
+		
+				alert(dataSubmit);
+				console.log(dataSubmit);
+				
+				$.ajax({
+				type: "POST",
+			url : "http://localhost:8082/arnia/",
+			contentType: "application/json",
+			data: dataSubmit, // serializes the form's elements.
+			success: function(data)
+			{
+			  // alert(data); // show response from the php script.
+			  lista();
+			}
+			});
+	}	
+}
+
+	
+	
+	function elimina(arnia) {
+
+		$.ajax({
+			type : "DELETE",
+			url : "http://localhost:8082/arnia/" + arnia.idArnia,
+			contentType : "application/json",
+			success : function(data) {
+				// alert(data);
+				lista();
+			}
+		});
+	}
+	function cercaIndirizzo() {
+		$("#mappa").empty();
+		var indirizzo = $("#indirizzo option:selected").text();
+		
+		if(indirizzo == ""){
+			return;
+		}
+		
+		var latitudine;
+		var longitudine;
+		
+		for(i=0; i<listaApiari.length; i++){
+			if(indirizzo == listaApiari[i].indirizzo){
+				latitudine = listaApiari[i].latitudine;
+				longitudine = listaApiari[i].longitudine;
+			}
+		}
+			
+					var mappa = "<div class=\"mapouter\">"
+					+ "<div class=\"gmap_canvas\">"
+					+ "<iframe width=\"350\" height=\"350\" id=\"gmap_canvas\" src=\"https://maps.google.com/maps?q=" + latitudine + 
+					"," + longitudine + "&output=embed\" frameborder=\"0\" scrolling=\"no\" marginheight=\"0\" marginwidth=\"0\">"
+					+ "</iframe>"
+					+ "<br>"	
+					+ "<style>.mapouter{position:relative;text-align:right;height:350px;width:350px;}</style>"
+					+ "<style>.gmap_canvas {overflow:hidden;background:none!important;height:350px;width:350px;}</style>"
+					+ "</div>"
+					+ "</div>";
+					$("#mappa").append(mappa);
+					
+	}
+
+</script>
+
+</head>
+<body>
+
+</body>
+</html>

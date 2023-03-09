@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='bg-dark'>
+<head>
+<title>Trattamenti</title>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="jquery-3.6.0.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="messages_it.js"></script>
+
+<script>
+
+var listaIdArnia= new Array();
+
+    $(document).ready(function() {
+        lista();
+        getListaIdArnia();
+    });
+    
+    
+    function getListaIdArnia(){
+   	 $.get("http://localhost:8082/arnia",
+   	 function(data, status){
+   	 var cnt = data.length;
+   	 
+   	 console.log('COUNT = ' + cnt);
+   		
+      for(let i=0; i<cnt; i++) {
+     	listaIdArnia.push(data[i]);	 
+      }    
+   });
+   }
+
+function lista() {
+    $("body").empty();
+    $
+        .get(
+            "http://localhost:8082/trattamento",
+            function(data, status) {
+                var cnt = data.length;
+                var tr = "";
+                $("#tbody").empty();
+
+                var table = "<div class='row bg-dark'>" +
+                    "<div class='col-2'text-center'><br /><a href='/menu'><button class='btn btn-secondary btn-sm'><i class='fa fa-arrow-left'></i> menù</button></a></div>" +
+                    "<div class='col-2'></div>" +
+                    "<div class='col-4 text-center h2 text-warning'>" +
+                    "<br />Lista Trattamenti" +
+                    "</div>" +
+                    "<div class='col-2'></div>" +
+                    "<div class='col-2 text-center'><br /><button class='btn btn-success btn-sm' onclick='inserimento()'><i class='fa fa-plus'></i> inserimento</button></div>" +
+                    "</div> <div>" +
+                    "<table class='table table-responsive'>" +
+                    "<thead class='bg-warning'>" +
+                    "<tr>" +
+                    "<th>idTrattamenti</th>" +
+                    "<th>idArnia</th>" +
+                    "<th>descrizione</th>" +
+                    "<th>dataTrattamento</th>" +
+                    "<th><div class='col-2'text-center'><a href='http://localhost:8082/download/Trattamenti.xlsx'><button class='btn btn-success btn-sm'> Trattamenti.xlsx</button></a></div></th>" +
+                    "<th><div class='col-2'text-center'><a href='http://localhost:8082/download/Trattamenti.pdf'><button class='btn btn-success btn-sm'> Trattamenti.pdf</button></a></div></th>" +
+                    "</tr>" +
+                    "</thead>" +
+                    "<tbody id='tbody'>" +
+                    "</tbody>" +
+                    "</table>" +
+                    "</div>";
+
+
+                $("body").append(table);
+                console.log(cnt);
+                for (let i = 0; i < cnt; i++) {
+                    console.log(data[i].idApiario);
+
+                    var idTrattamenti = data[i].idTrattamento;
+                    var idArnia = data[i].arnia.idArnia;
+                    var descrizione = data[i].descrizione;
+                    var dataTrattamento = new Date(data[i].dataTrattamento).toLocaleDateString();
+                    
+
+                    tr = tr +
+                        "<tr><td>" +
+                        idTrattamenti +
+                        "</td><td>" +
+                        idArnia +
+                        "</td><td>" +
+                        descrizione +
+                        "</td><td>" +
+                        dataTrattamento +
+                        "</td><td><button class='btn btn-primary' onclick='modifica(" +
+                        JSON.stringify(data[i]) +
+                        ")'><i class='fa fa-edit'></i> modifica</button> </td>" +
+                        "</td><td><button class='btn btn-danger' onclick='elimina(" +
+                        JSON.stringify(data[i]) +
+                        ")'><i class='fa fa-trash'></i> elimina</button> </td></tr>";
+                }
+                $("#tbody").append(tr);
+            });
+}
+
+function modifica(trattamento) {
+    $("body").empty();
+    
+    var optionIdArnia= "<option value=''>scegli...</option>";
+	 var cnt = listaIdArnia.length;
+	 for(var i=0; i<cnt; i++){
+		 if(trattamento.idArnia == listaIdArnia[i].idArnia){
+		 optionIdArnia = optionIdArnia + "<option value='"+ listaIdArnia[i].idArnia +"' selected>"+listaIdArnia[i].idArnia+"</option>";
+	 }else{
+		 optionIdArnia = optionIdArnia + "<option value='"+ listaIdArnia[i].idArnia +"'>"+listaIdArnia[i].idArnia+"</option>";
+	 	}
+	}
+
+    var form = "<div class='text-center h2 text-warning my-5 bg-dark'>Modifica Trattamento: " 
+        + trattamento.idTrattamento 
+        +"<br /><br /></div>" 
+        +"<form id='formInserimento'>"
+		+"<div class='col-6'>"
+        + "<div class='row'>"
+        + "<div class='col-6'>"
+        +"<table class='table text-center'>" 
+        +"<tr><th>idArnia</th><td>" 
+        + "<select name='idArnia' id='idArnia' required>"
+		+ optionIdArnia
+		+ "</select>"
+        +"</td></tr>" 
+        +"<tr><th>descrizione</th><td>" 
+        +"<input type='text' id='descrizione' name='descrizione' value='" + trattamento.descrizione + "' required>" 
+        +"</td></tr>" 
+        +"<tr><th>dataTrattamento</th><td>" 
+        +"<input type='date' id='dataTrattamento' name='dataTrattamento' value='" + trattamento.dataTrattamento + "' required>" 
+        +"</td></tr>" 
+        +"</table>" 
+        +"</div>" 
+        +"</div>"
+        +"</div>"
+        +"<div class='text-center'>" 
+        +"<button class='btn btn-primary' onclick='submitModificaTrattamento(" 
+        +trattamento.idTrattamento 
+        +")'><i class='fa fa-edit'></i> conferma</button> &nbsp;" 
+        +"<button class='btn btn-secondary' onclick='lista()'><i class='fa fa-close'></i> annulla</button>" 
+        +"<br /><br /></div>"
+        +"</form>";
+
+    $("body").append(form);
+    $("#formInserimento").validate();
+}
+
+function inserimento() {
+    $("body").empty();
+    
+    var optionIdArnia= "<option value=''>scegli...</option>";
+	 var cnt = listaIdArnia.length;
+	 for(var i=0; i<cnt; i++){
+		 optionIdArnia = optionIdArnia + "<option value='"+ listaIdArnia[i].idArnia +"'>"+listaIdArnia[i].idArnia+"</option>";
+	 }
+
+    var form = "<div class='text-center h2 text-warning my-5 bg-dark'>Inserisci Trattamento<br /><br /></div>"
+   		 +"<form id='formInserimento'>"
+   	     +"<div class='col-6'>"
+         + "<div class='row'>"
+         + "<div class='col-6'>"
+         +"<table class='table text-center'>" 
+         +"<tr><th>idArnia</th><td>" 
+         + "<select name='idArnia' id='idArnia' required>"
+		 + optionIdArnia
+		 + "</select>"
+         +"</td></tr>" 
+         +"<tr><th>descrizione</th><td>"
+         +"<input type='text' id='descrizione' name='descrizione' value='' required>" 
+         +"</td></tr>" 
+         +"<tr><th>dataTrattamento</th><td>" 
+         +"<input type='date' id='dataTrattamento' name='dataTrattamento' value='' required>" 
+         +"</td></tr>" 
+         +"</table>" 
+         +"</div>" 
+         +"</div>" 
+         +"<div class='text-center'>" 
+         +"<button class='btn btn-primary' onclick='submitInserimentoTrattamento()'><i class='fa fa-plus'></i> inserisci</button> &nbsp;" 
+         +"<button class='btn btn-secondary' onclick='lista()'><i class='fa fa-close'></i> annulla</button>" 
+         +"<br /><br /></div>"
+         +"</form>";
+
+    $("body").append(form);
+	$("#formInserimento").validate();
+
+}
+
+function submitModificaTrattamento(idTrattamento) {
+
+	var check=$("#formInserimento").valid();
+    if(check){
+    var dataSubmit = "{"
+		+ "\"arnia\":" + "{"
+    	+ "\"idArnia\":" + "\"" + $("#idArnia").val() + "\""
+    	+ "},"
+	    + "\"descrizione\":" + "\"" + $("#descrizione").val() + "\","
+	    + "\"dataTrattamento\":" + "\"" + $("#dataTrattamento").val() + "\""
+	 +"}";
+
+    //alert(dataSubmit);
+
+    $.ajax({
+        type: "PUT",
+        url: "http://localhost:8082/trattamento/" + idTrattamento,
+        contentType: "application/json",
+        data: dataSubmit,
+        success: function(data) {
+            // alert(data);
+            lista();
+        }
+	});
+	}
+	}
+
+function submitInserimentoTrattamento() {
+
+	var check=$("#formInserimento").valid();
+
+    if(check){
+    var dataSubmit = "{"
+		+ "\"arnia\":" + "{"
+    	+ "\"idArnia\":" + "\"" + $("#idArnia").val() + "\""
+    	+ "},"
+	    + "\"descrizione\":" + "\"" + $("#descrizione").val() + "\","
+	    + "\"dataTrattamento\":" + "\"" + $("#dataTrattamento").val() + "\""
+	 +"}";
+
+    //alert(dataSubmit);
+
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8082/trattamento/",
+        contentType: "application/json",
+        data: dataSubmit,
+        success: function(data) {
+            // alert(data);
+            lista();
+        }
+	});
+	}
+}
+
+function elimina(trattamento) {
+
+    $.ajax({
+        type: "DELETE",
+        url: "http://localhost:8082/trattamento/" + trattamento.idTrattamento,
+        contentType: "application/json",
+        success: function(data) {
+            // alert(data);
+            lista();
+        }
+    });
+}
+
+</script>
+
+</head>
+<body>
+
+</body>
+</html>

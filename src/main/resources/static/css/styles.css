@@ -1,0 +1,8 @@
+#global {
+    text-align: center;
+    border: 1px solid #dedede;
+    background: rgba(235,188,78, 0.9); /* Honey yellow background with 90% opacity */
+    width: 1024;
+    padding: 20px;
+    margin: 100px auto;
+}

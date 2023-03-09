@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='bg-dark'>
+<head>
+<title>Statistiche Miele</title>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="jquery-3.6.0.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="messages_it.js"></script>
+
+
+<script>
+var statistiche= new Array();
+var listaApiari= new Array();
+var listaTipiMiele= new Array();
+
+
+$(document).ready(
+function(){
+	ricerca();
+	
+});
+
+
+
+
+function ricerca() {
+	$("body").empty();
+	
+
+
+	var form = "<div class='text-center h2 text-warning my-5 bg-dark'>Ricerca Produzione<br /><br /></div>"
+			+"<form id='formRicerca'>"
+			+ "<div class='row'>"
+			+ "<div class='col-12'>"
+			+ "<table class='table text-center'>"
+			+ "<tr><th>data Inizio</th><td>"
+			+ "<input type='date' id='dataInizio' name='dataInizio'>"
+			+ "</td></tr>"
+			+ "<tr><th>data Fine</th><td>"
+			+ "<input type='date' id='dataFine' name='dataFine'>"
+			+ "</td></tr>"
+			+ "<tr><th>Id Apiario (per ricerca multipla separare con una ,)</th><td>"
+			+ "<input type='text' id='idApiario' name='idApiario'><br>" 
+			+ "</td></tr>"
+			+ "<tr><th>ID Tipo miele (per ricerca multipla separare con una ,)</th><td>"
+			+"<input type='text' id='idTipoMiele' name='idTipoMiele'><br>" 
+			+ "</td></tr>"
+			+ "</table>"
+			+ "</div>"
+			+ "</div>"
+			+ "<div class='text-center'>"
+			+ "<button class='btn btn-primary' type='button' onclick='lista()'><i class='fa fa-close'></i> ricerca</button>"
+			+ "<button class='btn btn-warning'><a href='http://localhost:8082/menu'><i class='fa fa-close'></i> menu</button>"
+			+ "<br /><br /></div>"
+			+"</form>";
+			
+			
+			
+	$("body").append(form);
+	//console.log(document.getElementById("dataInizio").value);
+}
+
+
+//var urlnull="http://localhost:8082/statistiche/?dataInizio=" + document.getElementById('dataInizio').value + "&dataFine=" + document.getElementById('dataFine') + "&tipoMiele=" +  document.getElementById('tipoMiele')  + "&idApiario=" +  document.getElementById('idApiario');
+//var urlundefined = "http://localhost:8082/statistiche/?dataInizio=" + dataInizio + "&dataFine=" + $("#dataFine").val() + "&tipoMiele=" +  $("#idTipoMiele").val() + "&idApiario=" +  $("#idApiario").val();
+
+function lista() {
+	var dataInizio=$("#dataInizio").val();
+	var dataFine=$("#dataFine").val();
+	var tipoMiele=$("#idTipoMiele").val();
+	var idApiario=$("#idApiario").val();
+	
+//	if(tipoMiele==null || tipoMiele==''){
+//	tipoMiele="1,2,3,4,5"
+//	}
+	
+	if(dataInizio==null || dataInizio==''){
+		dataInizio="1800-01-01"}
+	
+	if(dataFine==null || dataFine==''){
+		dataFine="3000-01-01"}
+
+	
+	
+	$("body").empty();
+
+	
+	$.get(
+			"http://localhost:8082/statistiche/?dataInizio=" + dataInizio + "&dataFine=" + dataFine + "&tipoMiele=" +  tipoMiele + "&idApiario=" +  idApiario,
+
+					function(data, status) {
+						var cnt = data.length;
+						var tr = "";
+						$("#tbody").empty();
+						
+						var table = "<div class='row bg-dark'>"
+								+ "<div class='col-2'text-center'><br /><a href='/menu'><button class='btn btn-secondary btn-sm'><i class='fa fa-arrow-left'></i> menù</button></a></div>"
+								+ "<div class='col-2'></div>"
+								+ "<div class='col-4 text-center h2 text-warning'>"
+								+ "<br />Statistiche Miele"
+								+ "</div>"
+								+ "<div class='col-2'></div>"
+								+ "<div class='col-2 text-center'><br /><button class='btn btn-success btn-sm' type='button' onclick='ricerca()'><i class='fa fa-plus'></i> ricerca</button></div>"
+								+ "</div> <div>"
+								+ "<table class='table table-responsive'>"
+								+ "<thead class='bg-warning'>" 
+								+ "<tr>"
+								+ "<th>IdArnia</th>"
+								+ "<th>Tipo Arnia</th>"
+								+ "<th>IdApiario</th>"
+								+ "<th>Indirizzo Apiario</th>" 
+								+ "<th>Tipo Miele</th>"
+								+ "<th>Quantita</th>"
+								+ "<th>Data Produzione</th>"
+								+ "</tr>" 
+								+ "</thead>"
+								+ "<tbody id='tbody'>" 
+								+ "</tbody>"
+								+ "</table>" 
+								+ "</div>";
+								
+						
+						 console.log('COUNT = ' + cnt);
+						$("body").append(table);
+						
+						for (let i = 0; i < cnt; i++) {
+							console.log(data[i].idProduzione);
+
+							var idArnia = data[i].arnia.idArnia;
+							var tipoArnia = data[i].arnia.tipoArnia.descrizione;
+							var idApiario = data[i].arnia.apiario.idApiario;
+							var indirizzoApiario = data[i].arnia.apiario.indirizzo;
+							var tipoMiele = data[i].tipoMiele.descrizione;
+							var qta = data[i].quantita
+							var dataProduzione = new Date(data[i].dataProduzione).toLocaleDateString();
+
+							tr = tr
+									+ "<tr><td>"
+									+ idArnia
+									+ "</td><td>"
+									+ tipoArnia
+									+ "</td><td>"
+									+ idApiario
+									+ "</td><td>"
+									+ indirizzoApiario
+									+ "</td><td>"
+									+ tipoMiele
+									+ "</td><td>"
+									+ qta
+									+ "</td><td>"
+									+ dataProduzione
+									+ "</td>";
+						}
+						$("#tbody").append(tr);
+					});
+}
+
+
+
+
+
+
+
+//var url2 = "http://localhost:8082/statistiche/?dataInizio=" + $("#dataInizio").val() + "&dataFine=" + $("#dataFine").val() + "&tipoMiele=" +  $("#idTipoMiele").val() + "&idApiario=" +  $("#idApiario").val();
+
+
+	
+
+	
+
+//var urlprova = "http://localhost:8082/statistiche/?dataInizio=1800-01-01&dataFine=2022-12-31&tipoMiele=1,2,4,3&idApiario=112,2";
+
+	
+
+
+</script>
+</head>
+<body>
+
+</body>
+</html>

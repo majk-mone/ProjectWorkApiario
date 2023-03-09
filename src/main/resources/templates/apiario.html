@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class='bg-dark'>
+<head>
+<title>Apiari</title>
+<link rel="stylesheet" href="css/styles.css"/>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="jquery-3.6.0.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="messages_it.js"></script>
+
+<script>
+	$(document).ready(function() {
+		lista();
+	});
+
+	function lista() {
+		$("body").empty();
+		$
+				.get(
+						"http://localhost:8082/apiario",
+						function(data, status) {
+							var cnt = data.length;
+							var tr = "";
+							$("#tbody").empty();
+
+							var table = "<div class='row bg-dark'>"
+									+ "<div class='col-2'text-center'><br /><a href='/menu'><button class='btn btn-secondary btn-sm'><i class='fa fa-arrow-left'></i> menù</button></a></div>"
+									+ "<div class='col-2'></div>"
+									+ "<div class='col-4 text-center h2 text-warning'>"
+									+ "<br />Lista Apiari"
+									+ "</div>"
+									+ "<div class='col-2'></div>"
+									+ "<div class='col-2 text-center'><br /><button class='btn btn-success btn-sm' onclick='inserimento()'><i class='fa fa-plus'></i> inserimento</button></div>"
+									+ "</div> <div>"
+									+ "<table class='table table-responsive'>"
+									+ "<thead class='bg-warning'>" 
+									+ "<tr>"
+									+ "<th>idApiario</th>"
+									+ "<th>indirizzo</th>"
+									+ "<th>latitudine</th>"
+									+ "<th>longitudine</th>" 
+									+ "<th><div class='col-2'text-center'><a href='http://localhost:8082/download/Apiario.xlsx'><button class='btn btn-success btn-sm'> Apiario.xlsx</button></a></div></th>"
+									+ "<th><div class='col-2'text-center'><a href='http://localhost:8082/download/Apiario.pdf'><button class='btn btn-success btn-sm'> Apiario.pdf</button></a></div></th>" 
+									+ "</tr>" 
+									+ "</thead>"
+									+ "<tbody id='tbody'>" 
+									+ "</tbody>"
+									+ "</table>"
+									+ "</div>";
+
+							
+							$("body").append(table);
+
+							for (let i = 0; i < cnt; i++) {
+
+								var idApiario = data[i].idApiario;
+								var indirizzo = data[i].indirizzo;
+								var latitudine = data[i].latitudine;
+								var longitudine = data[i].longitudine;
+
+								tr = tr
+										+ "<tr><td>"
+										+ idApiario
+										+ "</td><td>"
+										+ indirizzo
+										+ "</td><td>"
+										+ latitudine
+										+ "</td><td>"
+										+ longitudine
+										+ "</td><td><button class='btn btn-primary' onclick='modifica("
+										+ JSON.stringify(data[i])
+										+ ")'><i class='fa fa-edit'></i> modifica</button> </td>"
+										+ "</td><td><button class='btn btn-danger' onclick='elimina("
+										+ JSON.stringify(data[i])
+										+ ")'><i class='fa fa-trash'></i> elimina</button> </td></tr>";
+							}
+							$("#tbody").append(tr);
+						});
+	}
+
+	function modifica(apiario) {
+		$("body").empty();
+
+		var form = "<div class='text-center h2 text-warning my-5 bg-dark'>Modifica Apiario: "
+				+ apiario.idApiario
+				+ "<br /><br /></div>"
+				+"<form id='formInserimento'>"
+				+"<div class='col-6'>"
+		        + "<div class='row'>"
+		        + "<div class='col-6'>"
+				+ "<table class='table text-center'>"
+				+ "<tr><th>indirizzo (via, civico, città italiana)</th><td>"
+				+ "<input type='text' id='indirizzo' name='indirizzo' value='" + apiario.indirizzo + "'  onblur='cercaIndirizzo()' required>"
+				+ "</td></tr>"
+				+ "<tr><th>latitudine</th><td>"
+				+ "<input type='text' id='latitudine' name='latitudine' value='" + apiario.latitudine + "'required>"
+				+ "</td></tr>"
+				+ "<tr><th>longitudine</th><td>"
+				+ "<input type='text' id='longitudine' name='longitudine' value='" + apiario.longitudine + "'required>"
+				+ "</td></tr>"
+				+ "</table>"
+				+ "</div>"
+		        + "<div class='col-5 text-center h2' id='mappa'> in attesa dei dati... </div>"
+	            +"</div>"
+				+ "<div class='text-center'>"
+				+ "<button class='btn btn-primary' onclick='submitModificaApiario("
+				+ apiario.idApiario
+				+ ")'><i class='fa fa-edit'></i> conferma</button> &nbsp;"
+				+ "<button class='btn btn-secondary' onclick='lista()'><i class='fa fa-close'></i> annulla</button>"
+				+ "<br /><br /></div>"
+				+"</form>";
+
+		$("body").append(form);
+		$("#formInserimento").validate();
+	}
+
+	function inserimento() {
+		$("body").empty();
+
+		var form = "<div class='text-center h2 text-warning my-5 bg-dark'>Inserisci Apiario <br /><br /> </div>"
+            +"<form id='formInserimento'>"
+            +"<div class='col-6'>"
+            + "<div class='row'>"
+            + "<div class='col-6'>"
+            + "<table class='table text-center' >"
+            + "<tr><th>indirizzo (via, civico, città italiana)</th><td>"
+            + "<input type='text' id='indirizzo' name='indirizzo' value='' onblur='cercaIndirizzo()' required>"
+            + "</td></tr>"
+            + "<tr><th>latitudine</th><td>"
+            + "<input type='text' id='latitudine' name='latitudine' value='' required>"
+            + "</td></tr>"
+            + "<tr><th>longitudine</th><td>"
+            + "<input type='text' id='longitudine' name='longitudine' value='' required>"
+            + "</td></tr>"
+            + "</table>"
+            + "</div>"
+            + "<div class='col-5 text-center h2' id='mappa'> in attesa dei dati... </div>"
+            +"</div>"
+            + "</div>"
+            + "<div class='text-center'>"
+            + "<button class='btn btn-primary' onclick='submitInserimentoApiario()'><i class='fa fa-plus'></i> inserisci</button> &nbsp;"
+            + "<button class='btn btn-secondary' onclick='lista()'><i class='fa fa-close'></i> annulla</button>"
+            + "<br /><br /></div>"
+            +"</form>";
+				
+
+		$("body").append(form);
+		$("#formInserimento").validate();
+
+
+	}
+
+	function cercaIndirizzo() {
+		$("#mappa").empty();
+		var indirizzo = $("#indirizzo").val();
+
+		$
+				.get(
+						"https://nominatim.openstreetmap.org/?q=" + indirizzo
+								+ ",%20italy&format=json",
+						function(data, status) {
+
+
+							if (data.length > 0) {
+								$("#latitudine").val(data[0].lat);
+								$("#longitudine").val(data[0].lon);
+
+								var mappa = "<div class=\"mapouter\">"
+										+ "<div class=\"gmap_canvas\">"
+										+ "<iframe width=\"350\" height=\"350\" id=\"gmap_canvas\" src=\"https://maps.google.com/maps?q="
+										+ data[0].lat
+										+ ","
+										+ data[0].lon
+										+ "&output=embed\" frameborder=\"0\" scrolling=\"no\" marginheight=\"0\" marginwidth=\"0\">"
+										+ "</iframe>"
+										+ "<br>"
+										+ "<style>.mapouter{position:relative;text-align:center;height:350px;width:1000px;}</style>"
+										+ "<style>.gmap_canvas {overflow:hidden;background:none!important;height:350px;width:1000px;}</style>"
+										+ "</div>" + "</div>";
+								$("#mappa").append(mappa);
+							}
+						});
+	}
+
+	function submitModificaApiario(idApiario) {
+
+		var check=$("#formInserimento").valid();
+        if(check){
+		var dataSubmit = "{" + "\"indirizzo\":" + "\"" + $("#indirizzo").val()
+				+ "\"," + "\"latitudine\":" + "\"" + $("#latitudine").val()
+				+ "\"," + "\"longitudine\":" + "\"" + $("#longitudine").val()
+				+ "\"" + "}";
+
+
+		$.ajax({
+			type : "PUT",
+			url : "http://localhost:8082/apiario/" + idApiario,
+			contentType : "application/json",
+			data : dataSubmit,
+			success : function(data) {
+				// alert(data);
+				lista();
+			}
+		});
+	}
+	}
+	
+	function submitInserimentoApiario() {
+
+		var check=$("#formInserimento").valid();
+
+        if(check){
+		var dataSubmit = "{" + "\"indirizzo\":" + "\"" + $("#indirizzo").val()
+				+ "\"," + "\"latitudine\":" + "\"" + $("#latitudine").val()
+				+ "\"," + "\"longitudine\":" + "\"" + $("#longitudine").val()
+				+ "\"" + "}";
+
+
+		$.ajax({
+			type : "POST",
+			url : "http://localhost:8082/apiario/",
+			contentType : "application/json",
+			data : dataSubmit,
+			success : function(data) {
+				// alert(data);
+				lista();
+			}
+		});
+		}
+	}
+	
+	function elimina(apiario) {
+
+		$.ajax({
+			type : "DELETE",
+			url : "http://localhost:8082/apiario/" + apiario.idApiario,
+			contentType : "application/json",
+			success : function(data) {
+				// alert(data);
+				lista();
+			}
+		});
+	}
+</script>
+
+</head>
+<body>
+
+	
+</body>
+</html>
